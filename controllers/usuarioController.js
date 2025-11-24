@@ -5,7 +5,9 @@ import 'dotenv/config';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import bcrypt from 'bcrypt';
+import { validationResult } from 'express-validator';
 import crypto from 'crypto';
+import { Sequelize } from 'sequelize';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -71,7 +73,8 @@ const usuarioController = {
                     correo: user.correo,
                     telefono: user.telefono,
                     rol: user.rol,
-                    codigoUnico: user.codigoUnico //El código unico es para diferenciar usuarios
+                    codigoUnico: user.codigoUnico, //El código unico es para diferenciar usuarios
+                    loyalty_token: user.loyalty_token
                 }
             });
         } catch (error) {
@@ -89,6 +92,7 @@ const usuarioController = {
     },
 
     //Endpoint para registrar un cliente por correo y contraseña
+    //TODO: Implementar verificación de correo para posibles cuentas faltas mediante codigo de verificación o enlace
     registroClienteCorreo: async (req, res) => {
         try {
             // VALIDAR CAMPOS
@@ -102,10 +106,12 @@ const usuarioController = {
 
             const { username, correo, telefono, contrasenia } = req.body;
 
-            // Verifica si el correo o telefono ya está registrado
-            const existe = await Usuario.findOne({
-                where: { [Sequelize.Op.or]: [{ correo }, { telefono }] }
-            });
+            // Verifica si el correo ya está registrado, y si se proporciona teléfono, verifica también
+            let whereClause = { correo };
+            if (telefono) {
+                whereClause = { [Sequelize.Op.or]: [{ correo }, { telefono }] };
+            }
+            const existe = await Usuario.findOne({ where: whereClause });
             if (existe) {
                 return res.status(409).json({
                     status: false,
@@ -123,7 +129,7 @@ const usuarioController = {
                 username: username.trim(),
                 nombre: username.trim(),
                 correo: correo.toLowerCase().trim(),
-                telefono,
+                telefono: telefono || null,
                 codigoUnico: 'U' + Math.random().toString(36).slice(-4).toUpperCase(),
                 rol: 'cliente',
                 password_hash: hash,
@@ -148,7 +154,8 @@ const usuarioController = {
                     correo: user.correo,
                     telefono: user.telefono,
                     rol: user.rol,
-                    codigoUnico: user.codigoUnico
+                    codigoUnico: user.codigoUnico,
+                    loyalty_token: user.loyalty_token
                 }                                                               
             });
 
