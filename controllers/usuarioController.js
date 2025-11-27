@@ -16,19 +16,19 @@ const SALT_ROUNDS = 12;
 
 // INICIALIZA FIREBASE ADMIN
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(
-      join(__dirname, '../services/cafeteriauide-firebase.json')
-    )
-  });
+    admin.initializeApp({
+        credential: admin.credential.cert(
+            join(__dirname, '../services/cafeteriauide-firebase.json')
+        )
+    });
 }
 
 const usuarioController = {
     // Endpoint para registrar un cliente con firebase
-    registroClienteFirebase: async(req, res) => {
+    registroClienteFirebase: async (req, res) => {
         try {
             const { idToken } = req.body;
-            if(!idToken){
+            if (!idToken) {
                 return res.status(400).json({
                     status: false,
                     message: 'Token de identificación es requerido'
@@ -38,10 +38,10 @@ const usuarioController = {
             // Verificacion por parde de firebase
             const decoded = await admin.auth().verifyIdToken(idToken);
             const { email, name, uid } = decoded;
-            
+
             // busca para crear en la bd o retornar usuario existente
             let user = await Usuario.findOne({ where: { correo: email } });
-            if(!user){
+            if (!user) {
                 user = await Usuario.create({
                     username: name?.split(' ')[0].toLowerCase() || email.split('@')[0],
                     nombre: name || (name?.split(' ')[0] || email.split('@')[0]),
@@ -85,9 +85,9 @@ const usuarioController = {
             });
         }
     },
-    
+
     //Endpoint para registrar un cliente por OTP telefono
-    registroClienteOTP: async(req, res) => {
+    registroClienteOTP: async (req, res) => {
         // TODO: IMPLEMENTACIÓN PENDIENTE CON FIREBASE (OPCIÓN MAS VIABLE Y GRATUITA)
     },
 
@@ -116,8 +116,8 @@ const usuarioController = {
                 return res.status(409).json({
                     status: false,
                     message: existe.correo === correo
-                    ? 'Este correo ya está registrado'
-                    : 'Este teléfono ya está registrado'
+                        ? 'Este correo ya está registrado'
+                        : 'Este teléfono ya está registrado'
                 });
             }
 
@@ -156,28 +156,28 @@ const usuarioController = {
                     rol: user.rol,
                     codigoUnico: user.codigoUnico,
                     loyalty_token: user.loyalty_token
-                }                                                               
+                }
             });
 
         } catch (error) {
             console.error('Registro error:', error);
             return res.status(500).json({
-            status: false,
-            message: 'Error del servidor. Intenta más tarde'
+                status: false,
+                message: 'Error del servidor. Intenta más tarde'
             });
         };
     },
 
     //Endpoint para autenticacion de administrador
-    adminAuth: async(req, res) => {
-        try{
+    adminAuth: async (req, res) => {
+        try {
             // Estructura de correo y contraseña
-            
+
             // Logueo del admin con correo y contraseña
             const { correo, contrasenia } = req.body;
 
             // Valida campos
-            if(!correo || !contrasenia){
+            if (!correo || !contrasenia) {
                 return res.status(400).json({
                     status: false,
                     message: 'Correo y contraseña son requeridos'
@@ -186,11 +186,12 @@ const usuarioController = {
 
             // Busca la existencia del correo
             const usuario = await Usuario.findOne({
-                where: { correo: correo.toLowerCase().trim(),
+                where: {
+                    correo: correo.toLowerCase().trim(),
                     rol: 'administrador'
                 }
             });
-            if (!usuario){
+            if (!usuario) {
                 return res.status(401).json({
                     status: false,
                     message: 'Credenciales inválidas'
@@ -198,7 +199,7 @@ const usuarioController = {
             }
 
             // Verifica rol administrador
-            if( usuario.rol.toLowerCase() !== 'administrador'){
+            if (usuario.rol.toLowerCase() !== 'administrador') {
                 return res.status(403).json({
                     status: false,
                     message: 'Acceso denegado'
@@ -207,7 +208,7 @@ const usuarioController = {
 
             // verifica contraseña
             const valido = await bcrypt.compare(contrasenia, usuario.password_hash);
-            if(!valido){
+            if (!valido) {
                 return res.status(401).json({
                     status: false,
                     message: 'Credenciales inválidas'
@@ -242,16 +243,33 @@ const usuarioController = {
         };
     },
 
+    //Endpoint para cerrar sesion administrador
+    logoutAdmin: async (req, res) => {
+        try {
+            res.clearCookie('token');
+            return res.status(200).json({
+                status: true,
+                message: 'Sesión cerrada exitosamente'
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Error al cerrar sesión'
+            });
+        }
+    },
+
     //Endpoint para login cliente
-    userAuth: async(req, res) => {
-        try{
+    userAuth: async (req, res) => {
+        try {
             // Estructura de correo y contraseña
-            
+
             // Logueo del cliente con correo y contraseña
             const { correo, contrasenia } = req.body;
 
             // Valida campos
-            if(!correo || !contrasenia){
+            if (!correo || !contrasenia) {
                 return res.status(400).json({
                     status: false,
                     message: 'Correo y contraseña son requeridos'
@@ -260,11 +278,12 @@ const usuarioController = {
 
             // Busca la existencia del correo
             const usuario = await Usuario.findOne({
-                where: { correo: correo.toLowerCase().trim(),
+                where: {
+                    correo: correo.toLowerCase().trim(),
                     rol: 'cliente'
                 }
             });
-            if (!usuario){
+            if (!usuario) {
                 return res.status(401).json({
                     status: false,
                     message: 'Credenciales inválidas'
@@ -272,7 +291,7 @@ const usuarioController = {
             }
 
             // Verifica rol cliente
-            if( usuario.rol.toLowerCase() !== 'cliente'){
+            if (usuario.rol.toLowerCase() !== 'cliente') {
                 return res.status(403).json({
                     status: false,
                     message: 'Acceso denegado'
@@ -281,7 +300,7 @@ const usuarioController = {
 
             // verifica contraseña
             const valido = await bcrypt.compare(contrasenia, usuario.password_hash);
-            if(!valido){
+            if (!valido) {
                 return res.status(401).json({
                     status: false,
                     message: 'Credenciales inválidas'

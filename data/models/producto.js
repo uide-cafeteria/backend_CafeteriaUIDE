@@ -46,11 +46,6 @@ const Producto = sequelize.define('producto', {
   imagen: {
     type: DataTypes.STRING(255),
     allowNull: true,
-    validate: {
-      isUrl: {
-        msg: 'La imagen debe ser una URL válida'
-      }
-    }
   },
   categoria: {
     type: DataTypes.ENUM('Desayuno', 'Almuerzo', 'Postre', 'Otro'),
