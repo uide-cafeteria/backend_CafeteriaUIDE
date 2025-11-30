@@ -1,4 +1,3 @@
-import express from 'express';
 import MenuDiario from '../data/models/menuDiario.js';
 
 const menuDiarioController = {
@@ -18,6 +17,15 @@ const menuDiarioController = {
                 message: 'Error al obtener el menú diario',
                 error
             });
+        };
+    },
+
+    // CRUD menu_diario
+    crearMenuDiario: async (req, res) => {
+        try {
+
+        } catch (error) {
+
         }
     }
 }

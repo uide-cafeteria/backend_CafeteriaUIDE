@@ -7,15 +7,13 @@ const MenuDiario = sequelize.define('menu_diario', {
         primaryKey: true,
         autoIncrement: true
     },
-    fecha: {
-        type: DataTypes.DATEONLY,
+    dia_semana: {
+        type: DataTypes.ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'),
         allowNull: false,
         validate: {
-            notNull: {
-                msg: 'La fecha es requerida'
-            },
-            isDate: {
-                msg: 'La fecha debe ser una fecha válida'
+            isIn: {
+                args: [['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']],
+                msg: 'El día de la semana debe ser una de las opciones válidas'
             }
         }
     },
