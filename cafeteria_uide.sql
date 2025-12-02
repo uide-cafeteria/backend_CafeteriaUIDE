@@ -44,6 +44,7 @@ CREATE TABLE producto (
 -- 3. Menú del día
 CREATE TABLE menu_diario (
     idMenuDiario INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(150) NOT NULL,
     dia_semana ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
     idProducto INT NOT NULL,
     precio_especial DECIMAL(8,2) NULL,

@@ -49,13 +49,9 @@ const MenuDiario = sequelize.define('menu_diario', {
 }, {
     tableName: 'menu_diario',
     timestamps: false, // No agregar createdAt/updatedAt automáticos
-    indexes: [
-        {
-            unique: true,
-            fields: ['fecha', 'idProducto'],
-            name: 'unica_fecha_producto'
-        }
-    ]
 });
 
+// Relaciones
+MenuDiario.belongsTo(Producto, { foreignKey: 'idProducto' });
+Producto.hasMany(MenuDiario, { foreignKey: 'idProducto' });
 export default MenuDiario;
