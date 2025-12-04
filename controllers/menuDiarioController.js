@@ -146,7 +146,7 @@ const menuDiarioController = {
     eliminarMenuDiario: async (req, res) => {
         try {
             if (req.usuario.rol !== 'administrador') {
-                return res.status(403).json({ status: false, message: 'Acceso denegado' });
+                return res.status(403).json({ status: false, message: 'Acceso denegado solo administrador' });
             }
 
             const { idMenuDiario } = req.params;
