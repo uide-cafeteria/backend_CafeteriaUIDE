@@ -72,6 +72,7 @@ CREATE TABLE historial_almuerzo (
     idProducto INT NULL,                      -- NULL = cualquier almuerzo cuenta igual
     registrado_por INT NOT NULL,              -- personal o admin que escaneó el QR
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    es_gratis BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
     FOREIGN KEY (idProducto) REFERENCES producto(idProducto),
     FOREIGN KEY (registrado_por) REFERENCES usuario(idUsuario),
@@ -122,5 +123,6 @@ CREATE TABLE comentario (
 
 -- Índices útiles
 CREATE INDEX idx_menu_fecha ON menu_diario(fecha);
+CREATE INDEX idx_usuario_gratis ON historial_almuerzo(idUsuario, es_gratis);
 CREATE INDEX idx_historial_usuario ON historial_almuerzo(idUsuario);
 CREATE INDEX idx_historial_fecha ON historial_almuerzo(fecha);
