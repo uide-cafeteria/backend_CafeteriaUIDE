@@ -323,7 +323,9 @@ const usuarioController = {
                     id: usuario.idUsuario,
                     username: usuario.username,
                     correo: usuario.correo,
-                    rol: usuario.rol
+                    rol: usuario.rol,
+                    codigoUnico: usuario.codigoUnico,
+                    loyalty_token: usuario.loyalty_token
                 }
             });
         } catch (error) {
