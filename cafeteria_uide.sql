@@ -86,6 +86,7 @@ CREATE TABLE horario_atencion (
     dia_semana ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
     hora_apertura TIME NOT NULL,
     hora_cierre TIME NOT NULL,
+    abierto BOOLEAN DEFAULT true,
     UNIQUE KEY unico_dia_ubicacion (ubicacion, dia_semana)
 );
 
@@ -122,7 +123,5 @@ CREATE TABLE comentario (
 );
 
 -- Índices útiles
-CREATE INDEX idx_menu_fecha ON menu_diario(fecha);
-CREATE INDEX idx_usuario_gratis ON historial_almuerzo(idUsuario, es_gratis);
 CREATE INDEX idx_historial_usuario ON historial_almuerzo(idUsuario);
 CREATE INDEX idx_historial_fecha ON historial_almuerzo(fecha);
